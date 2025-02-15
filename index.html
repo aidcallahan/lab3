@@ -26,7 +26,16 @@
                 .then(data => {
                     L.geoJSON(data, {
                         onEachFeature: function (feature, layer) {
-                            // Add a popup to each city feature
+                            pointToLayer: function (feature, latlng) {
+                            return L.circleMarker(latlng, {
+                                radius: getRadius(feature.properties.population),
+                                color: "blue",
+                                fillColor: "lightblue",
+                                fillOpacity: 0.5,
+                                weight: 1
+                            });
+                        },
+                        onEachFeature: function (feature, layer) {
                             if (feature.properties && feature.properties.name) {
                                 layer.bindPopup(
                                     `<b>${feature.properties.name}</b><br>Population: ${feature.properties.population}`
