@@ -1,52 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-        <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-        <meta name="viewport" content="width=device-width">
-            <title>US Cities by Population Size</title>
-        <link rel="stylesheet" href="css/style.css">
-        <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-        <style>
-            #map { height: 500px; width: 100%; }
-        </style>
-    </head>
-    <body>
-        <div id="map"></div>
-        <script>var map = L.map('map').setView([37.8, -96], 4);
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>US Cities by Population Size</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        #map { height: 500px; width: 100%; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script>
+        var map = L.map('map').setView([37.8, -96], 4);
+
         setTimeout(() => {
-                map.invalidateSize();
-            }, 1000);
+            map.invalidateSize();
+        }, 1000);
+
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
-            attribution: '&copy; OpenStreetMap users'
+            attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
+
+        function getRadius(population) {
+            return Math.sqrt(population) / 1000; // Adjust scale as needed
+        }
+
         fetch('data/USA_Major_Cities.geojson')
-                .then(response => response.json())
-                .then(data => {
-                    L.geoJSON(data,
-                        onEachFeature: function (feature, layer) {
-                            pointToLayer: function (feature, latlng) {
-                            return L.circleMarker(latlng, {
-                                radius: getRadius(feature.properties.population),
-                                color: "blue",
-                                fillColor: "lightblue",
-                                fillOpacity: 0.5,
-                                weight: 1
-                            });
-                        },
-                        onEachFeature: function (feature, layer) {
-                            if (feature.properties && feature.properties.name) {
-                                layer.bindPopup(
-                                    `<b>${feature.properties.name}</b><br>Population: ${feature.properties.population}`
-                                );
-                            }
+            .then(response => response.json())
+            .then(data => {
+                L.geoJSON(data, {
+                    pointToLayer: function (feature, latlng) {
+                        return L.circleMarker(latlng, {
+                            radius: getRadius(feature.properties.population),
+                            color: "blue",
+                            fillColor: "lightblue",
+                            fillOpacity: 0.5,
+                            weight: 1
+                        });
+                    },
+                    onEachFeature: function (feature, layer) {
+                        if (feature.properties && feature.properties.name) {
+                            layer.bindPopup(
+                                `<b>${feature.properties.name}</b><br>Population: ${feature.properties.population}`
+                            );
                         }
-                    }).addTo(map);
-                })
-            
-                .catch(error => console.error('Error loading file', error));
-        </script>
-        <script type="text/javascript" src="js/main.js"></script>
-    </body>
+                    }
+                }).addTo(map);
+            })
+            .catch(error => console.error('Error loading file', error));
+    </script>
+</body>
 </html>
