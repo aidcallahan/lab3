@@ -24,7 +24,7 @@
         fetch('data/USA_Major_Cities.geojson')
                 .then(response => response.json())
                 .then(data => {
-                    L.geoJSON(data, {
+                    L.geoJSON(data,
                         onEachFeature: function (feature, layer) {
                             pointToLayer: function (feature, latlng) {
                             return L.circleMarker(latlng, {
@@ -44,6 +44,7 @@
                         }
                     }).addTo(map);
                 })
+            
                 .catch(error => console.error('Error loading file', error));
         </script>
         <script type="text/javascript" src="js/main.js"></script>
