@@ -25,14 +25,22 @@
         }).addTo(map);
 
         function getRadius(population) {
+            if (!population || isNaN(population)) return 5; // Default size if population is missing
             return Math.sqrt(population) / 1000; // Adjust scale as needed
         }
 
         fetch('data/USA_Major_Cities.geojson')
             .then(response => response.json())
             .then(data => {
+                console.log("GeoJSON Data:", data); // Debugging log
+
                 L.geoJSON(data, {
                     pointToLayer: function (feature, latlng) {
+                        if (!feature.properties || !feature.geometry || !feature.geometry.coordinates) {
+                            console.warn("Skipping invalid feature:", feature);
+                            return null; // Skip invalid entries
+                        }
+
                         return L.circleMarker(latlng, {
                             radius: getRadius(feature.properties.population),
                             color: "blue",
@@ -44,7 +52,7 @@
                     onEachFeature: function (feature, layer) {
                         if (feature.properties && feature.properties.name) {
                             layer.bindPopup(
-                                `<b>${feature.properties.name}</b><br>Population: ${feature.properties.population}`
+                                `<b>${feature.properties.name}</b><br>Population: ${feature.properties.population || 'Unknown'}`
                             );
                         }
                     }
