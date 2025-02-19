@@ -25,8 +25,8 @@
         }).addTo(map);
 
         function getRadius(population) {
-            if (!population || isNaN(population)) return 5; // Default size if population is missing
-            return Math.sqrt(population) / 1000; // Adjust scale as needed
+            if (!population || isNaN(population)) return 5; // Default size for missing data
+            return Math.max(5, Math.sqrt(population) / 200); // Adjust divisor for better scaling
         }
 
         fetch('data/USA_Major_Cities.geojson')
@@ -52,7 +52,7 @@
                     onEachFeature: function (feature, layer) {
                         if (feature.properties && feature.properties.name) {
                             layer.bindPopup(
-                                `<b>${feature.properties.name}</b><br>Population: ${feature.properties.population || 'Unknown'}`
+                                `<b>City: ${feature.properties.name}</b><br>Population: ${feature.properties.population.toLocaleString()}`
                             );
                         }
                     }
