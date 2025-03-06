@@ -25,14 +25,24 @@
         }).addTo(map);
 
         function getRadius(population) {
-            if (!population || isNaN(population)) return 5; // Default size for missing data
-            return Math.max(5, Math.sqrt(population) / 50); // Adjust divisor for better scaling
+            let pop = Number(population); // Convert to number if needed
+            if (isNaN(pop) || pop <= 0) {
+                console.warn("Invalid population data:", population);
+                return 5; // Default small circle for missing/invalid data
+            }
+
+            let radius = Math.max(5, Math.sqrt(pop) / 50); // Adjust divisor for better scaling
+            console.log(`Population: ${pop}, Calculated Radius: ${radius}`);
+            return radius;
         }
 
         fetch('data/USA_Major_Cities.geojson')
             .then(response => response.json())
             .then(data => {
-                console.log("GeoJSON Data:", data); // Debugging log
+                console.log("GeoJSON Data Loaded:", data); // Debugging log
+
+                // Log the structure of the first feature's properties to debug population
+                console.log("First Feature Properties:", data.features[0].properties);
 
                 L.geoJSON(data, {
                     pointToLayer: function (feature, latlng) {
@@ -41,8 +51,16 @@
                             return null; // Skip invalid entries
                         }
 
+                        // Log the feature's properties to inspect the population field
+                        console.log(`Feature Properties: ${JSON.stringify(feature.properties)}`);
+
+                        let cityName = feature.properties.name || "Unknown City";
+                        let population = feature.properties.population || "Unknown"; // Default to Unknown if population is missing
+
+                        console.log(`City: ${cityName}, Population: ${population}`); // Log the population value
+
                         return L.circleMarker(latlng, {
-                            radius: getRadius(feature.properties.population),
+                            radius: getRadius(population), // Apply radius scaling based on population
                             color: "blue",
                             fillColor: "lightblue",
                             fillOpacity: 0.5,
@@ -52,13 +70,13 @@
                     onEachFeature: function (feature, layer) {
                         if (feature.properties && feature.properties.name) {
                             layer.bindPopup(
-                                `<b>City: ${feature.properties.name}</b><br>Population: ${feature.properties.population.toLocaleString()}`
+                                `<b>City: ${feature.properties.name}</b><br>Population: ${feature.properties.population ? feature.properties.population.toLocaleString() : "Unknown"}`
                             );
                         }
                     }
                 }).addTo(map);
             })
-            .catch(error => console.error('Error loading file', error));
+            .catch(error => console.error('Error loading GeoJSON file:', error));
     </script>
 </body>
 </html>
