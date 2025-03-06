@@ -26,7 +26,7 @@
 
         function getRadius(population) {
             if (!population || isNaN(population)) return 5; // Default size for missing data
-            return Math.max(5, Math.sqrt(population) / 200); // Adjust divisor for better scaling
+            return Math.max(5, Math.sqrt(population) / 50); // Adjust divisor for better scaling
         }
 
         fetch('data/USA_Major_Cities.geojson')
