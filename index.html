@@ -57,8 +57,8 @@
                     const lon = coordinates[0];
 
                     // Calculate the radius for the proportional circle based on POP_CLASS
-                    // Scale the radius for better visual representation
-                    const radius = Math.sqrt(popClass) * 3;  // Adjust for better proportional scaling (scale as needed)
+                    // Apply an exponential scale for more drastic size differences
+                    const radius = Math.pow(popClass, 1.5) * 2;  // Exponentiate POP_CLASS and scale with * 2 for more extreme size differences
 
                     // Create a circle marker with proportional radius based on POP_CLASS
                     L.circleMarker([lat, lon], {
