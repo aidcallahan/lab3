@@ -25,17 +25,18 @@
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        // Function to add city markers one by one
+        // Function to load shapefile and read features one by one
         async function loadShapefile() {
             try {
+                // Open the shapefile components (shp, shx, dbf)
                 const source = await shapefile.open(
                     "https://aidcallahan.github.io/lab3/USA_Major_Cities.shp",  // .shp file
                     "https://aidcallahan.github.io/lab3/USA_Major_Cities.shx",  // .shx file
                     "https://aidcallahan.github.io/lab3/USA_Major_Cities.dbf"   // .dbf file
                 );
 
+                // Read features one by one from the shapefile
                 let result;
-                // Process each feature one by one
                 while (!(result = await source.read()).done) {
                     const feature = result.value;
 
@@ -53,19 +54,19 @@
                         color: 'green',
                         fillColor: 'green',
                         fillOpacity: 0.5,
-                        radius: radius
+                        radius: radius  // This is the proportional radius
                     }).bindPopup('<b>' + cityName + '</b><br>Population: ' + population)
                     .addTo(map);
 
-                    // Wait a small amount of time to allow the user to see each city being added
-                    await new Promise(resolve => setTimeout(resolve, 200)); // Wait for 200 ms between markers
+                    // Optional: Add a small delay between markers (if you want to control the loading time)
+                    await new Promise(resolve => setTimeout(resolve, 100)); // Delay for 100ms
                 }
             } catch (error) {
                 console.error("Error loading shapefile: ", error);
             }
         }
 
-        // Call the function to load the shapefile and add markers
+        // Call the function to load the shapefile and read the features one by one
         loadShapefile();
     </script>
 
