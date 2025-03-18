@@ -1,15 +1,36 @@
-<script src="https://unpkg.com/shapefile/dist/shapefile.min.js"></script>
-<script>
-    // Initialize the map (centered on the USA)
-    var map = L.map('map').setView([37.8, -96], 4);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USA Major Cities Webmap</title>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/shapefile/dist/shapefile.min.js"></script>
+    <style>
+        #map { height: 600px; }
+    </style>
+</head>
+<body>
 
-    // Add OpenStreetMap tile layer
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
+    <h1>Major Cities in the USA</h1>
+    <div id="map"></div>
 
-    // Correct file paths for files in the lab3 folder
-    shapefile.open("lab3/USA_Major_Cities.shp", "lab3/USA_Major_Cities.shx", "lab3/USA_Major_Cities.dbf")
+    <script>
+        // Initialize the map (centered on the USA)
+        var map = L.map('map').setView([37.8, -96], 4);
+
+        // Add OpenStreetMap tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // File paths for shapefile components located in the GitHub Pages folder
+        shapefile.open(
+            "https://aidcallahan.github.io/lab3/USA_Major_Cities.shp", 
+            "https://aidcallahan.github.io/lab3/USA_Major_Cities.shx", 
+            "https://aidcallahan.github.io/lab3/USA_Major_Cities.dbf"
+        )
         .then(function(source) {
             source.read().then(function log(result) {
                 if (result.done) return;
@@ -30,7 +51,7 @@
                     fillOpacity: 0.5,
                     radius: radius
                 }).bindPopup('<b>' + cityName + '</b><br>Population: ' + population)
-                  .addTo(map);
+                .addTo(map);
 
                 source.read().then(log);
             });
@@ -38,4 +59,7 @@
         .catch(function(error) {
             console.error("Error loading shapefile: ", error);
         });
-</script>
+    </script>
+
+</body>
+</html>
