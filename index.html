@@ -24,60 +24,57 @@
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        // Function to load the GeoJSON data and display the cities
+        // Function to load and process GeoJSON data
         async function loadGeoJSON() {
             try {
-                // Fetch the GeoJSON file from the repository
+                // Fetch GeoJSON data from the GitHub Pages repository
                 const response = await fetch("https://aidcallahan.github.io/lab3/USA_Major_Cities.geojson");
                 const geojsonData = await response.json();
 
-                // Log the entire GeoJSON object to inspect its structure
+                // Check if the data is fetched correctly
                 console.log('GeoJSON Data:', geojsonData);
 
-                // Check the structure of the first feature
-                if (geojsonData.features && geojsonData.features.length > 0) {
-                    console.log('First Feature:', geojsonData.features[0]);
-                    console.log('Properties of First Feature:', geojsonData.features[0].properties);
-                }
-
-                // Loop through the GeoJSON features (cities)
+                // Loop through each feature (city) in the GeoJSON data
                 geojsonData.features.forEach(function (feature) {
-                    // Log the feature properties
-                    console.log('City Properties:', feature.properties);
+                    // Access the properties of each feature
+                    const properties = feature.properties;
+                    const name = properties.NAME;  // City name
+                    const population = properties.POPULATION;  // Population size
+                    const popClass = properties.POP_CLASS;  // Population class (used for proportional symbol size)
+                    const coordinates = feature.geometry.coordinates;
 
-                    // Coordinates for the city (Lat, Lon)
-                    const lat = feature.geometry.coordinates[1];
-                    const lon = feature.geometry.coordinates[0];
-                    const cityName = feature.properties.NAME; // Get the city name
-                    const population = feature.properties.POPULATION;  // Get the population
-                    const popClass = feature.properties.POP_CLASS; // Get the POP_CLASS value for circle size
+                    // Ensure that the properties are being read correctly
+                    console.log(`City: ${name}, Population: ${population}, POP_CLASS: ${popClass}`);
 
-                    // Debug: Check if population and popClass exist
-                    console.log(`City: ${cityName}, Population: ${population}, POP_CLASS: ${popClass}`);
-
-                    if (!population || !popClass) {
-                        console.warn(`Missing population or POP_CLASS for city: ${cityName}`);
+                    // Skip cities with missing data (to avoid errors)
+                    if (!name || !population || !popClass || !coordinates) {
+                        console.warn(`Missing data for city: ${name}`);
+                        return;
                     }
 
-                    // Calculate proportional radius for the circles based on POP_CLASS
-                    // Scaling factor: You can adjust this to change circle sizes
-                    const radius = Math.sqrt(popClass) * 2;  // Use square root and multiply for better proportionality
+                    // Get the latitude and longitude of the city
+                    const lat = coordinates[1];
+                    const lon = coordinates[0];
 
-                    // Create the circle marker and add it to the map
+                    // Calculate the radius for the proportional circle based on POP_CLASS
+                    // You can adjust the multiplier and divisor for scaling
+                    const radius = Math.sqrt(popClass) * 3;  // Adjust for better proportional scaling
+
+                    // Create a circle marker with proportional radius based on POP_CLASS
                     L.circleMarker([lat, lon], {
                         color: 'green',
                         fillColor: 'green',
                         fillOpacity: 0.5,
-                        radius: radius  // Proportional radius based on POP_CLASS
-                    }).bindPopup('<b>' + cityName + '</b><br>Population: ' + population + '<br>Pop Class: ' + popClass)
+                        radius: radius
+                    }).bindPopup(`<b>${name}</b><br>Population: ${population}<br>Pop Class: ${popClass}`)
                     .addTo(map);
                 });
             } catch (error) {
-                console.error("Error loading GeoJSON: ", error);
+                console.error("Error loading GeoJSON data:", error);
             }
         }
 
-        // Call the function to load the GeoJSON and read the features
+        // Call the function to load and display GeoJSON data
         loadGeoJSON();
     </script>
 
