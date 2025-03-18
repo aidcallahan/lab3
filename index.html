@@ -26,7 +26,7 @@
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        // Use shapefile.js to load the shapefile components (.shp, .shx) from the project root folder
+        // Use shapefile.js to load the shapefile components (.shp, .shx) from the project folder
         shapefile.open("USA_Major_Cities.shp", "USA_Major_Cities.shx")
             .then(function(source) {
                 source.read().then(function log(result) {
