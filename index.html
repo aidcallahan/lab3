@@ -26,8 +26,8 @@
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        // Use shapefile.js to load the shapefile components (.shp, .shx) from the project folder
-        shapefile.open("USA_Major_Cities.shp", "USA_Major_Cities.shx")
+        // Use shapefile.js to load the shapefile components (.shp, .shx, and .dbf)
+        shapefile.open("USA_Major_Cities.shp", "USA_Major_Cities.shx", "USA_Major_Cities.dbf")
             .then(function(source) {
                 source.read().then(function log(result) {
                     if (result.done) return;
@@ -36,18 +36,21 @@
                     var feature = result.value;
                     var lat = feature.geometry.coordinates[1];  // Latitude
                     var lon = feature.geometry.coordinates[0];  // Longitude
-                    var population = feature.properties.population;  // Population from .dbf
 
-                    // Scale the radius for proportional circles
-                    var radius = Math.sqrt(population) / 1000;  // Adjust the scale here
+                    // Get the city name and population from the .dbf data
+                    var cityName = feature.properties.name;  // Assuming city name is in the 'name' property of .shp
+                    var population = feature.properties.population || 1000000;  // Default population if not available
 
-                    // Create a proportional circle marker based on population size
+                    // Scale the radius for proportional circles based on population
+                    var radius = Math.sqrt(population) / 1000;  // Adjust the scaling factor as necessary
+
+                    // Create a proportional circle marker for each city based on population
                     L.circleMarker([lat, lon], {
                         color: 'green',
                         fillColor: 'green',
                         fillOpacity: 0.5,
                         radius: radius
-                    }).bindPopup('<b>' + feature.properties.city_name + '</b><br>Population: ' + population)
+                    }).bindPopup('<b>' + cityName + '</b><br>Population: ' + population)
                       .addTo(map);
 
                     source.read().then(log);
