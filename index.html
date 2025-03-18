@@ -37,10 +37,10 @@
                     const lat = feature.geometry.coordinates[1];
                     const lon = feature.geometry.coordinates[0];
                     const cityName = feature.properties.name;
-                    const population = feature.properties.population || 1000000;  // Default population if not available
+                    const population = feature.properties.POPULATION || 1000000;  // Use the correct property name (POPULATION)
 
                     // Calculate proportional radius for the circles based on population
-                    const radius = Math.sqrt(population) / 1000;  // Adjust the scaling factor as needed
+                    const radius = Math.sqrt(population) / 500;  // Adjust the scaling factor
 
                     // Create the circle marker and add it to the map
                     L.circleMarker([lat, lon], {
