@@ -1,32 +1,29 @@
 <script src="https://unpkg.com/shapefile/dist/shapefile.min.js"></script>
 <script>
-    // Initialize the map
-    var map = L.map('map').setView([37.8, -96], 4); // Centered on the USA
+    // Initialize the map (centered on the USA)
+    var map = L.map('map').setView([37.8, -96], 4);
 
-    // Add tile layer (Mapbox or OpenStreetMap)
+    // Add OpenStreetMap tile layer
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    // Correctly reference the .shp, .shx, and .dbf files separately
-    shapefile.open("webmap/USA_Major_Cities.shp", "webmap/USA_Major_Cities.shx", "webmap/USA_Major_Cities.dbf")
+    // Correct file paths for files in the lab3 folder
+    shapefile.open("lab3/USA_Major_Cities.shp", "lab3/USA_Major_Cities.shx", "lab3/USA_Major_Cities.dbf")
         .then(function(source) {
             source.read().then(function log(result) {
                 if (result.done) return;
 
-                // Each city is a feature
                 var feature = result.value;
                 var lat = feature.geometry.coordinates[1];  // Latitude
                 var lon = feature.geometry.coordinates[0];  // Longitude
-
-                // Get the city name and population from the .dbf data
-                var cityName = feature.properties.name;  // Assuming city name is in the 'name' property of .shp
+                var cityName = feature.properties.name;  // City name
                 var population = feature.properties.population || 1000000;  // Default population if not available
 
-                // Scale the radius for proportional circles based on population
-                var radius = Math.sqrt(population) / 1000;  // Adjust the scaling factor as necessary
+                // Calculate proportional radius for the circles based on population
+                var radius = Math.sqrt(population) / 1000;  // Adjust the scaling factor as needed
 
-                // Create a proportional circle marker for each city based on population
+                // Create the circle marker and add it to the map
                 L.circleMarker([lat, lon], {
                     color: 'green',
                     fillColor: 'green',
@@ -39,6 +36,6 @@
             });
         })
         .catch(function(error) {
-            console.error(error);
+            console.error("Error loading shapefile: ", error);
         });
 </script>
