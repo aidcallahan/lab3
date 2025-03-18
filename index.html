@@ -59,7 +59,7 @@
                     // Calculate the radius for the proportional circle based on POP_CLASS
                     // Apply an extreme scale using a logarithmic/exponential function for the range 6 to 10
                     // This ensures that POP_CLASS 6 is very small, while POP_CLASS 10 is very large
-                    const radius = Math.pow(popClass - 5) * 2; // This gives us an exponential scale for the range 6-10
+                    const radius = Math.pow(popClass - 5, 3) * 5; // This gives us an exponential scale for the range 6-10
 
                     // Create a circle marker with proportional radius based on POP_CLASS
                     L.circleMarker([lat, lon], {
