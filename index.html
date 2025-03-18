@@ -28,11 +28,10 @@
         // Function to load shapefile and read features one by one
         async function loadShapefile() {
             try {
-                // Open the shapefile components (shp, shx, dbf)
+                // Open the shapefile components (shp and shx)
                 const source = await shapefile.open(
                     "https://aidcallahan.github.io/lab3/USA_Major_Cities.shp",  // .shp file
-                    "https://aidcallahan.github.io/lab3/USA_Major_Cities.shx",  // .shx file
-                    "https://aidcallahan.github.io/lab3/USA_Major_Cities.dbf"   // .dbf file
+                    "https://aidcallahan.github.io/lab3/USA_Major_Cities.shx"   // .shx file
                 );
 
                 // Read features one by one from the shapefile
@@ -46,18 +45,22 @@
                     const cityName = feature.properties.name;
                     const population = feature.properties.population || 1000000;  // Default population if not available
 
-                    // Calculate proportional radius for the circles based on population
-                    const radius = Math.sqrt(population) / 1000;  // Adjust the scaling factor as needed
+                    // **Proportional Circle Calculation** based on population
+                    // We'll use a scaling function to calculate radius based on population
+                    const maxPopulation = 10000000;  // The max population for scaling, change based on your data
+                    const minPopulation = 50000;    // Minimum population considered for scaling
+                    const scaledRadius = Math.sqrt(population) * 0.1; // Scaling factor to adjust circle size
 
-                    // Create the circle marker and add it to the map
+                    // Create a circle marker (Proportional Symbol)
                     L.circleMarker([lat, lon], {
                         color: 'green',
                         fillColor: 'green',
                         fillOpacity: 0.5,
-                        radius: radius  // This is the proportional radius
-                    }).bindPopup('<b>' + cityName + '</b><br>Population: ' + population)
+                        radius: scaledRadius // Proportional radius
+                    })
+                    .bindPopup('<b>' + cityName + '</b><br>Population: ' + population)
                     .addTo(map);
-
+                    
                     // Optional: Add a small delay between markers (if you want to control the loading time)
                     await new Promise(resolve => setTimeout(resolve, 100)); // Delay for 100ms
                 }
