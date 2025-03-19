@@ -14,7 +14,7 @@
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-<!-- </head> -->
+</head>
 <body>
 
     <h1>US Drought Map (Choropleth)</h1>
@@ -49,12 +49,12 @@
 
                 // Basic color scale for the drought intensity (0 = green, 5 = red)
                 function getColor(d) {
-                    return d === 0 ? '#31a354' :
-                           d === 1 ? '#78c679' :
-                           d === 2 ? '#addd8e' :
-                           d === 3 ? '#fdae61' :
-                           d === 4 ? '#f16913' :
-                           '#d7301f'; // red for the highest drought intensity (5)
+                    if (d === 0) return '#31a354'; // No Drought (green)
+                    if (d === 1) return '#78c679'; // Abnormally Dry (light green)
+                    if (d === 2) return '#addd8e'; // Moderate Drought (light yellow)
+                    if (d === 3) return '#fdae61'; // Severe Drought (orange)
+                    if (d === 4) return '#f16913'; // Extreme Drought (dark orange)
+                    return '#d7301f'; // Exceptional Drought (red)
                 }
 
                 // Add the GeoJSON to the map with custom styles
