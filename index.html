@@ -35,11 +35,10 @@
         fetch('usdm_current.json')
             .then(response => response.json())
             .then(data => {
-                // Function to style the polygons based on some property
+                // Function to style the polygons based on the "DM" (Drought Intensity) property
                 function style(feature) {
-                    // Assuming the dataset has a property like "severity" (adjust if needed)
-                    var severity = feature.properties.severity; // Replace with correct property
-                    var color = severity ? getColor(severity) : '#ffffff';
+                    var droughtIntensity = feature.properties.DM; // Access the DM property (drought intensity)
+                    var color = getColor(droughtIntensity);
                     
                     return {
                         fillColor: color,
@@ -50,25 +49,60 @@
                     };
                 }
 
-                // Create a color scale using d3.js (use any color scale you prefer)
+                // Color scale for the drought intensity (0 = green, 5 = red)
                 function getColor(d) {
-                    return d3.scaleSequential(d3.interpolateYlOrRd)
-                        .domain([0, 5])(d); // Adjust domain to match your severity scale
+                    // Create a color scale from green (0) to red (5)
+                    return d3.scaleSequential(d3.interpolateReds) // This will scale from green to red
+                        .domain([0, 5])(d); // Map DM values from 0 to 5
                 }
 
                 // Add the GeoJSON to the map with custom styles
                 L.geoJSON(data, {
                     style: style,
                     onEachFeature: function (feature, layer) {
+                        // Create a popup content that will show the drought intensity level
                         var popupContent = `
-                            <strong>Area: ${feature.properties.name || 'N/A'}</strong><br>
-                            Severity: ${feature.properties.severity || 'Unknown'}
+                            <strong>${feature.properties.name || 'Unknown Area'}</strong><br>
+                            Drought Intensity (DM): ${feature.properties.DM || 'Unknown'}<br>
+                            Drought Severity: ${getDroughtLevel(feature.properties.DM)}
                         `;
                         layer.bindPopup(popupContent);
+
+                        // Show Drought Level when you hover over the feature
+                        layer.on('mouseover', function() {
+                            layer.setStyle({
+                                weight: 4,
+                                color: '#666',
+                                dashArray: '',
+                                fillOpacity: 0.9
+                            });
+                        });
+
+                        layer.on('mouseout', function() {
+                            layer.setStyle({
+                                weight: 2,
+                                color: 'white',
+                                dashArray: '',
+                                fillOpacity: 0.7
+                            });
+                        });
                     }
                 }).addTo(map);
             })
             .catch(error => console.error('Error loading GeoJSON data:', error));
+
+        // Function to convert drought intensity to a human-readable drought level
+        function getDroughtLevel(droughtIntensity) {
+            switch (droughtIntensity) {
+                case 0: return "No Drought";
+                case 1: return "Abnormally Dry";
+                case 2: return "Moderate Drought";
+                case 3: return "Severe Drought";
+                case 4: return "Extreme Drought";
+                case 5: return "Exceptional Drought";
+                default: return "Unknown";
+            }
+        }
     </script>
 
 </body>
