@@ -14,9 +14,7 @@
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-    <!-- D3.js for color scale -->
-    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
-</head>
+<!-- </head> -->
 <body>
 
     <h1>US Drought Map (Choropleth)</h1>
@@ -49,11 +47,14 @@
                     };
                 }
 
-                // Color scale for the drought intensity (0 = green, 5 = red)
+                // Basic color scale for the drought intensity (0 = green, 5 = red)
                 function getColor(d) {
-                    // Create a color scale from green (0) to red (5)
-                    return d3.scaleSequential(d3.interpolateReds) // This will scale from green to red
-                        .domain([0, 5])(d); // Map DM values from 0 to 5
+                    return d === 0 ? '#31a354' :
+                           d === 1 ? '#78c679' :
+                           d === 2 ? '#addd8e' :
+                           d === 3 ? '#fdae61' :
+                           d === 4 ? '#f16913' :
+                           '#d7301f'; // red for the highest drought intensity (5)
                 }
 
                 // Add the GeoJSON to the map with custom styles
